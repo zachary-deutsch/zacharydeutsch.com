@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Name — Portfolio</title>
+  <meta name="description" content="Personal website and portfolio of Your Name." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b0c0f; --text:#e6e8ec; --muted:#9aa3b2; --card:#12141a; --accent:#7c5cff;
+      --ring: rgba(124,92,255,.35); --border:#1d2130; --link:#b7a6ff;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+    .container{max-width:1000px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0 6px;border-bottom:1px solid var(--border);position:sticky;top:0;background:color-mix(in oklab, var(--bg) 92%, black 8%);backdrop-filter:saturate(180%) blur(8px);z-index:10}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{color:var(--text)}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);padding:.6rem .9rem;border-radius:14px;background:var(--card);color:var(--text);text-decoration:none}
+    .btn:focus{outline:3px solid var(--ring)}
+    .pill{display:inline-block;padding:.35rem .7rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.85rem}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;padding:28px 0}
+    .hero h1{font-size:clamp(2rem, 3.6vw, 3.4rem);line-height:1.05;margin:.2rem 0}
+    .hero p{color:var(--muted);font-size:1.05rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .section{padding:18px 0 8px}
+    h2{font-size:1.4rem;margin:8px 0 14px}
+    .project{display:flex;flex-direction:column;gap:.5rem}
+    .project a{color:var(--link);text-decoration:none}
+    .project a:hover{text-decoration:underline}
+    .meta{color:var(--muted);font-size:.95rem}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .footer{padding:30px 0;color:var(--muted);border-top:1px solid var(--border);margin-top:22px}
+    .avatar{width:120px;height:120px;border-radius:18px;object-fit:cover;border:1px solid var(--border)}
+    .toggle{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:.5rem .7rem;cursor:pointer;color:var(--muted)}
+    .list{display:grid;gap:10px}
+    .list-item{display:flex;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+    .list-item .right{color:var(--muted)}
+    a.inline{color:var(--link)}
+    @media (max-width: 860px){
+      .hero{grid-template-columns:1fr}
+      .grid-2,.grid-3{grid-template-columns:1fr}
+      header{position:static}
+    }
+    /* Light mode */
+    .light{--bg:#fbfbfe; --text:#0c1020; --muted:#616b7d; --card:#ffffff; --accent:#5b3cff; --ring:rgba(91,60,255,.35); --border:#e8eaf1; --link:#3d2ce0;}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,monospace;background:color-mix(in oklab, var(--card) 70%, var(--bg) 30%);border:1px solid var(--border);padding:.15rem .4rem;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="row" style="align-items:center">
+        <strong>Your Name</strong>
+        <span class="pill">Engineer • Researcher • Student</span>
+      </div>
+      <div class="row" style="align-items:center">
+        <nav>
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#experience">Experience</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <button class="toggle" id="themeBtn" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div>
+          <span class="pill">Hello!</span>
+          <h1>I build human-centered tools at the intersection of AI, bio, and design.</h1>
+          <p>
+            I’m <strong>Your Name</strong>, a <em>Biomedical & Mechanical Engineering</em> undergrad at Duke,
+            researching EMG time-series, spatial-omics, and ML for healthcare. I like fast experiments, neat plots,
+            and clear writing.
+          </p>
+          <div class="row" style="margin-top:12px">
+            <a class="btn" href="#projects">View Projects</a>
+            <a class="btn" href="resume.pdf">Download Résumé</a>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <a class="inline" href="mailto:you@example.com">you@example.com</a> ·
+            <a class="inline" href="https://github.com/yourhandle">GitHub</a> ·
+            <a class="inline" href="https://www.linkedin.com/in/yourhandle/">LinkedIn</a> ·
+            <a class="inline" href="https://scholar.google.com/citations?user=XXXXX">Google Scholar</a>
+          </div>
+        </div>
+        <div class="card" style="text-align:center">
+          <img class="avatar" src="portrait.jpg" alt="Your headshot" />
+          <p class="meta" style="margin-top:10px">Based in Durham, NC • Open to research collabs</p>
+          <div class="list">
+            <div class="list-item"><span>Focus</span><span class="right">ML for sEMG • Spatial-omics</span></div>
+            <div class="list-item"><span>Skills</span><span class="right">Python • PyTorch • Scanpy</span></div>
+            <div class="list-item"><span>Fun</span><span class="right">Soccer • Travel • Coffee</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about" class="section">
+        <h2>About</h2>
+        <div class="card">
+          <p>
+            I’m currently working in the Hickey Lab on spatial-omics methods and previously at SRALab on VR for
+            phantom limb pain. Recently, I’ve been optimizing quantile-based time-series features (QUANT) for
+            sEMG classification and exploring topology-aware GNNs for cell-type labeling.
+          </p>
+          <p class="meta">Interests: ML for healthcare • Human-AI interaction • Scientific tooling</p>
+        </div>
+      </section>
+
+      <!-- Projects -->
+      <section id="projects" class="section">
+        <h2>Selected Projects</h2>
+        <div class="grid grid-2">
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong>QUANT-EMG</strong><span class="pill">2025</span>
+            </div>
+            <p class="meta">Quantile features + cosine inter-channel similarity for robust sEMG classification.</p>
+            <div class="row">
+              <a href="https://github.com/yourhandle/quant-emg">Repo</a>
+              <a href="#">Paper (preprint)</a>
+              <a href="#">Slides</a>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong>STELLAR-ish GNN</strong><span class="pill">2025</span>
+            </div>
+            <p class="meta">Graph embeddings for spatial proteomics; feature+spatial k-NN, Leiden on learned space.</p>
+            <div class="row">
+              <a href="#">Notebook</a>
+              <a href="#">Demo</a>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong>VR-HEAL</strong><span class="pill">2024</span>
+            </div>
+            <p class="meta">VR environment for health education & pain modulation; usability-first.</p>
+            <div class="row">
+              <a href="#">Video</a>
+              <a href="#">Write-up</a>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong>Cell-Neighborhoods</strong><span class="pill">2024</span>
+            </div>
+            <p class="meta">Spatial “neighborhood” discovery in tissue via scalable clustering & metrics.</p>
+            <div class="row">
+              <a href="#">Poster</a>
+              <a href="#">Code</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section id="experience" class="section">
+        <h2>Experience</h2>
+        <div class="grid">
+          <div class="list-item">
+            <div><strong>Hickey Lab, Duke</strong><div class="meta">Undergraduate Researcher • 2024–present</div></div>
+            <div class="right">Durham, NC</div>
+          </div>
+          <div class="list-item">
+            <div><strong>Shirley Ryan AbilityLab</strong><div class="meta">Research Intern • 2024</div></div>
+            <div class="right">Chicago, IL</div>
+          </div>
+          <div class="list-item">
+            <div><strong>TAU / HuBMAP Projects</strong><div class="meta">ML Research • 2025</div></div>
+            <div class="right">Tel Aviv, IL</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="section">
+        <h2>Contact</h2>
+        <div class="card">
+          <p>
+            Best reached by email at <a class="inline" href="mailto:you@example.com">you@example.com</a>.
+            I’m open to research collaborations and internships. For a quick intro call, send times or
+            press <span class="kbd">C</span> on desktop to copy my email.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <span>© <span id="year"></span> Your Name</span>
+        <span class="meta">Built with vanilla HTML/CSS • <a class="inline" href="#top">Back to top</a></span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle + persist
+    const root = document.documentElement, btn = document.getElementById('themeBtn');
+    const setTheme = t => { t==='light' ? root.classList.add('light') : root.classList.remove('light'); localStorage.setItem('theme', t); btn.textContent = t==='light' ? '☀️' : '🌙'; }
+    setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+    btn.onclick = () => setTheme(root.classList.contains('light') ? 'dark' : 'light');
+
+    // Keyboard: C = copy email
+    document.addEventListener('keydown', e => {
+      if(e.key.toLowerCase()==='c' && !/input|textarea/i.test(document.activeElement.tagName)){
+        navigator.clipboard.writeText('you@example.com');
+        btn.textContent = '✅';
+        setTimeout(()=> setTheme(localStorage.getItem('theme')||'dark'), 600);
+      }
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
