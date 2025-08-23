@@ -15,15 +15,43 @@
     *{box-sizing:border-box}
           html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
       .container{max-width:1000px;margin:0 auto;padding:5px 28px 28px 28px}
-      header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:color-mix(in oklab, var(--bg) 92%, black 8%);backdrop-filter:saturate(180%) blur(8px);z-index:10}
+      /* Simplify header: remove tinted background and blur */
+      header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+        padding:14px 0;
+        border-bottom:1px solid var(--border);
+        position:sticky;
+        top:0;
+        background:var(--bg);
+        z-index:10;
+      }
     nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600;display:inline-flex;align-items:center}
     nav a:hover{color:var(--text)}
     .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);padding:.6rem .9rem;border-radius:14px;background:var(--card);color:var(--text);text-decoration:none}
     .btn:focus{outline:3px solid var(--ring)}
     .pill{display:inline-block;padding:.35rem .7rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.85rem}
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;padding:1px 0}
-    .hero h1{font-size:clamp(2rem, 3.6vw, 3.4rem);line-height:1.05;margin:.2rem 0}
-    .hero p{color:var(--muted);font-size:1.05rem}
+    /* Simplify hero layout: center-aligned vertical stack */
+    .hero{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+      padding:40px 0;
+      text-align:center;
+    }
+    .hero h1{
+      font-size:clamp(2rem, 3.6vw, 3.4rem);
+      line-height:1.05;
+      margin:.2rem 0;
+    }
+    .hero p{
+      color:var(--muted);
+      font-size:1.05rem;
+      margin:0;
+    }
     .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
     .grid{display:grid;gap:16px}
     .grid-2{grid-template-columns:repeat(2,1fr)}
@@ -42,7 +70,7 @@
     .list-item .right{color:var(--muted)}
     a.inline{color:var(--link)}
     @media (max-width: 860px){
-      .hero{grid-template-columns:1fr}
+      /* Collapse project grids to a single column on small screens */
       .grid-2,.grid-3{grid-template-columns:1fr}
       header{position:static}
     }
@@ -57,7 +85,6 @@
         </div>
       <div class="row" style="align-items:center">
         <nav>
-          <a href="#about">About</a>
           <a href="#projects">Projects</a>
           <a href="#experience">Experience</a>
           <a href="mailto:zachary.deutsch@duke.edu">Contact</a>
@@ -68,88 +95,85 @@
     <main>
       <!-- Hero -->
       <section class="hero">
-        <div>
-
-          <h1>Zachary Deutsch</h1>
-          <p style="margin-left:5px">
-            Engineer • Researcher • Student
-          </p>
-          <div class="row" style="margin-top:12px">
-            <a class="btn" href="#projects">View Projects</a>
-            <a class="btn" href="Zachary Deutsch 2025 Resume.pdf">Download Résumé</a>
-          </div>
-
-        </div>
-        <div class="card" style="text-align:center">
-          <img class="avatar" src="portrait.jpg" alt="Your headshot" />
-          <p class="meta" style="margin-top:10px">Based in Durham, NC • Open to research collabs</p>
-          <div class="list">
-            <div class="list-item"><span>Focus</span><span class="right">ML for sEMG • Spatial-omics</span></div>
-            <div class="list-item"><span>Skills</span><span class="right">Python • PyTorch • Scanpy</span></div>
-            <div class="list-item"><span>Fun</span><span class="right">Soccer • Travel • Coffee</span></div>
-          </div>
+        <!-- Simplified hero: center-aligned with your portrait, name, tagline and call-to-actions -->
+        <img class="avatar" src="portrait.jpg" alt="Your headshot" />
+        <h1>Zachary Deutsch</h1>
+        <p class="meta">Engineer • Researcher • Student</p>
+        <div class="row" style="margin-top:12px">
+          <a class="btn" href="#projects">View Projects</a>
+          <!-- Resume link opens in a new tab; spaces encoded for safety -->
+          <a class="btn" href="Zachary%20Deutsch%202025%20Resume.pdf" target="_blank" rel="noopener noreferrer">Download Résumé</a>
         </div>
       </section>
 
-      <!-- About -->
-      <section id="about" class="section">
-        <h2>About</h2>
-        <div class="card">
-          <p>
-            I’m currently working in the Hickey Lab on spatial-omics methods and previously at SRALab on VR for
-            phantom limb pain. Recently, I’ve been optimizing quantile-based time-series features (QUANT) for
-            sEMG classification and exploring topology-aware GNNs for cell-type labeling.
-          </p>
-          <p class="meta">Interests: ML for healthcare • Human-AI interaction • Scientific tooling</p>
+      <!-- Education -->
+      <section id="education" class="section">
+        <h2>Education</h2>
+        <div class="grid">
+          <div class="list-item">
+            <div><strong>Duke University</strong><div class="meta">B.S.E. Mechanical Engineering, B.S.E. Mechanical Engineering, Minor in Philosophy</div></div>
+          </div>
+          <div class="list-item">
+            <div><strong>University of Oxford</strong><div class="meta">Study Abroad coursework in AI and Ethics</div></div>
+          </div>
         </div>
       </section>
 
       <!-- Projects -->
       <section id="projects" class="section">
-        <h2>Selected Projects</h2>
+        <h2>Projects</h2>
         <div class="grid grid-2">
           <article class="card project">
             <div class="row" style="justify-content:space-between;align-items:center">
-              <strong>QUANT-EMG</strong><span class="pill">2025</span>
+              <strong>Multi-Organ Cell Type Annotation</strong><span class="pill">2025</span>
             </div>
-            <p class="meta">Quantile features + cosine inter-channel similarity for robust sEMG classification.</p>
+            <p class="meta">Presented at 2025 Conferences: BMES Annual Meeting, HuBMAP Annual Meeting, and Duke Undergraduate Research Symposium</p>
             <div class="row">
-              <a href="https://github.com/yourhandle/quant-emg">Repo</a>
-              <a href="#">Paper (preprint)</a>
-              <a href="#">Slides</a>
+              <!-- Poster file opens in a new tab -->
+              <a href="20250410_Undergraduate_Research_Symposium_Deutsch.pdf" target="_blank" rel="noopener noreferrer">Poster</a>
             </div>
           </article>
 
           <article class="card project">
             <div class="row" style="justify-content:space-between;align-items:center">
-              <strong>STELLAR-ish GNN</strong><span class="pill">2025</span>
+              <strong>sEMG Time Series Classification</strong><span class="pill">2025</span>
             </div>
-            <p class="meta">Graph embeddings for spatial proteomics; feature+spatial k-NN, Leiden on learned space.</p>
+            <p class="meta"></p>
             <div class="row">
-              <a href="#">Notebook</a>
-              <a href="#">Demo</a>
+              <!-- Preprint file opens in a new tab -->
+              <a href="arXiv%20Quant%20Paper.pdf" target="_blank" rel="noopener noreferrer">Preprint</a>
             </div>
           </article>
 
           <article class="card project">
             <div class="row" style="justify-content:space-between;align-items:center">
-              <strong>VR-HEAL</strong><span class="pill">2024</span>
+              <strong>Catheter Placement Training System</strong><span class="pill">2025</span>
             </div>
-            <p class="meta">VR environment for health education & pain modulation; usability-first.</p>
+            <p class="meta">1st Place Fortin Foundation Bass Connections Showcase</p>
             <div class="row">
-              <a href="#">Video</a>
-              <a href="#">Write-up</a>
+              <!-- Preprint file opens in a new tab -->
+              <a href="Review%20Paper%20Structure.pdf" target="_blank" rel="noopener noreferrer">Preprint</a>
             </div>
           </article>
 
           <article class="card project">
             <div class="row" style="justify-content:space-between;align-items:center">
-              <strong>Cell-Neighborhoods</strong><span class="pill">2024</span>
+              <strong>bCPAP Liquid Level Detection</strong><span class="pill">2024</span>
             </div>
-            <p class="meta">Spatial “neighborhood” discovery in tissue via scalable clustering & metrics.</p>
+            <p class="meta">Presented at Duke Engineering Design Expo</p>
             <div class="row">
-              <a href="#">Poster</a>
-              <a href="#">Code</a>
+              <!-- Poster file opens in a new tab -->
+              <a href="Poster%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Poster</a>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong>VR for Treating Phantom Limb Pain</strong><span class="pill">2024</span>
+            </div>
+            <p class="meta">Presented at Institute of Biomedical Engineering MEC Symposium</p>
+            <div class="row">
+              <a href="https://www.sralab.org/research/labs/bionic-medicine/projects/virtual-reality-phantom-limb-pain" target="_blank" rel="noopener noreferrer">Project Page</a>
             </div>
           </article>
         </div>
@@ -160,19 +184,25 @@
         <h2>Experience</h2>
         <div class="grid">
           <div class="list-item">
-            <div><strong>Hickey Lab, Duke</strong><div class="meta">Undergraduate Researcher • 2024–present</div></div>
+            <div><strong>Duke Pratt School of Engineering</strong><div class="meta">Machine Learning Engineer • 2024-Present</div></div>
             <div class="right">Durham, NC</div>
           </div>
           <div class="list-item">
-            <div><strong>Shirley Ryan AbilityLab</strong><div class="meta">Research Intern • 2024</div></div>
-            <div class="right">Chicago, IL</div>
+            <div><strong>Tel Aviv University</strong><div class="meta">Machine Learning Researcher • 2025</div></div>
+            <div class="right">Tel Aviv, IL</div>
           </div>
           <div class="list-item">
-            <div><strong>TAU / HuBMAP Projects</strong><div class="meta">ML Research • 2025</div></div>
-            <div class="right">Tel Aviv, IL</div>
+            <div><strong>Duke School of Medicine</strong><div class="meta">Mechanical Engineer • 2024-2025</div></div>
+            <div class="right">Durham, NC</div>
+          </div>
+          <div class="list-item">
+            <div><strong>Shirley Ryan Ability Lab</strong><div class="meta">Data Scientist • 2024</div></div>
+            <div class="right">Chicago, IL</div>
           </div>
         </div>
       </section>
+
+
 
 
     </main>
