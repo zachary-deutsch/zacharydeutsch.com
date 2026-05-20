@@ -13,27 +13,25 @@
       --ring: rgba(91,60,255,.35); --border:#e8eaf1; --link:#3d2ce0;
     }
     *{box-sizing:border-box}
-          html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
-      .container{max-width:1000px;margin:0 auto;padding:5px 28px 28px 28px}
-      /* Simplify header: remove tinted background and blur */
-      header{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:16px;
-        padding:14px 0;
-        border-bottom:1px solid var(--border);
-        position:sticky;
-        top:0;
-        background:var(--bg);
-        z-index:10;
-      }
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+    .container{max-width:1000px;margin:0 auto;padding:5px 28px 28px 28px}
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:14px 0;
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      background:var(--bg);
+      z-index:10;
+    }
     nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600;display:inline-flex;align-items:center}
     nav a:hover{color:var(--text)}
     .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);padding:.6rem .9rem;border-radius:14px;background:var(--card);color:var(--text);text-decoration:none}
     .btn:focus{outline:3px solid var(--ring)}
     .pill{display:inline-block;padding:.35rem .7rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.85rem}
-    /* Simplify hero layout: center-aligned vertical stack */
     .hero{
       display:flex;
       flex-direction:column;
@@ -72,7 +70,6 @@
     .list-item a:hover{text-decoration:underline}
     a.inline{color:var(--link)}
     @media (max-width: 860px){
-      /* Collapse project grids to a single column on small screens */
       .grid-2,.grid-3{grid-template-columns:1fr}
       header{position:static}
     }
@@ -82,9 +79,9 @@
 <body>
   <div class="container">
     <header>
-              <div class="row" style="align-items:center">
-          <strong style="margin-left:10px">Zachary </strong>
-        </div>
+      <div class="row" style="align-items:center">
+        <strong style="margin-left:10px">Zachary </strong>
+      </div>
       <div class="row" style="align-items:center">
         <nav>
           <a href="#publications">Publications</a>
@@ -97,12 +94,10 @@
     <main>
       <!-- Hero -->
       <section class="hero">
-        <!-- Simplified hero: center-aligned with your portrait, name, tagline and call-to-actions -->
         <img class="avatar" src="portrait.jpg" alt="Your headshot" />
         <h1>Zachary </h1>
         <p class="meta">Engineer • Researcher • Student</p>
         <div class="row" style="margin-top:12px">
-          <!-- Resume link opens in a new tab; spaces encoded for safety -->
           <a class="btn" href="Zachary_Deutsch_Resume.pdf" target="_blank" rel="noopener noreferrer">Download Résumé</a>
         </div>
       </section>
@@ -142,7 +137,14 @@
         <div class="grid">
           <article class="card project">
             <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. W. (2025). <a href="20251125_Health_Data_Science.pdf" target="_blank" rel="noopener noreferrer">Comparative evaluation of unsupervised clustering methods for cell-type annotation in HuBMAP CODEX intestinal tissue.</a> <em>Poster presented at the Duke Health Data Science Showcase.</em></span>
+              <span><strong>Deutsch, Z.</strong> &amp; Oca, S. R. (2026). <a href="Duke_AI_Education_Conference.pdf" target="_blank" rel="noopener noreferrer">Evaluating Engineering Students’ Detection of Hallucinations in Large Language Model Solutions.</a> <em>The AI in Education at Duke Summit.</em></span>
+              <span class="pill">2026</span>
+            </div>
+          </article>
+
+          <article class="card project">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <span><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. W. (2025). <a href="20251125_Health_Data_Science.pdf" target="_blank" rel="noopener noreferrer">Comparative evaluation of unsupervised clustering methods for cell-type annotation in HuBMAP CODEX intestinal tissue.</a> <em>Duke Health Data Science Showcase.</em></span>
               <span class="pill">2025</span>
             </div>
           </article>
@@ -183,12 +185,6 @@
           </article>
         </div>
       </section>
-
-
-
-
-
-
     </main>
 
     <footer class="footer">
@@ -200,9 +196,6 @@
   </div>
 
   <script>
-
-
-    // Year
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
