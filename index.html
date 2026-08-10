@@ -73,6 +73,18 @@
       .grid-2,.grid-3{grid-template-columns:1fr}
       header{position:static}
     }
+    @media (max-width: 640px){
+      .container{padding:0 18px 24px}
+      header{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 0}
+      header .row{width:100%}
+      header nav{display:flex;flex-wrap:wrap;gap:4px}
+      header nav a{margin:0;padding:.35rem .45rem}
+      .hero{gap:12px;padding:30px 0}
+      .hero h1{font-size:2.35rem}
+      .hero-links{display:grid;grid-template-columns:repeat(2,max-content);justify-content:center}
+      .hero-links .btn:first-child{grid-column:1 / -1;justify-self:center}
+      .btn{padding:.5rem .6rem}
+    }
     .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,monospace;background:color-mix(in oklab, var(--card) 70%, var(--bg) 30%);border:1px solid var(--border);padding:.15rem .4rem;border-radius:6px}
   </style>
 </head>
@@ -80,13 +92,13 @@
   <div class="container">
     <header>
       <div class="row" style="align-items:center">
-        <strong style="margin-left:10px">Zachary </strong>
+        <strong>Zachary Deutsch</strong>
       </div>
       <div class="row" style="align-items:center">
         <nav>
           <a href="#publications">Publications</a>
           <a href="#conferences">Conferences</a>
-          <a href="mailto:zachary.@duke.edu">Contact</a>
+          <a href="mailto:zachary@duke.edu">Contact</a>
         </nav>
       </div>
     </header>
@@ -95,10 +107,12 @@
       <!-- Hero -->
       <section class="hero">
         <img class="avatar" src="portrait.jpg" alt="Your headshot" />
-        <h1>Zachary </h1>
+        <h1>Zachary Deutsch</h1>
         <p class="meta">Engineer • Researcher • Student</p>
-        <div class="row" style="margin-top:12px">
+        <div class="row hero-links" style="margin-top:12px">
           <a class="btn" href="Zachary_Deutsch_Resume.pdf" target="_blank" rel="noopener noreferrer">Download Résumé</a>
+          <a class="btn" href="https://github.com/zachary-deutsch" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="btn" href="https://www.linkedin.com/in/zachary-deutsch-505307279/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         </div>
       </section>
 
@@ -138,54 +152,27 @@
       <section id="conferences" class="section">
         <h2>Conferences</h2>
         <div class="grid">
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong> &amp; Oca, S. R. (2026). <a href="Duke_AI_Education_Conference.pdf" target="_blank" rel="noopener noreferrer">Evaluating Engineering Students’ Detection of Hallucinations in Large Language Model Solutions.</a> <em>The AI in Education at Duke Summit.</em></span>
-              <span class="pill">2026</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. W. (2025). <a href="20251125_Health_Data_Science.pdf" target="_blank" rel="noopener noreferrer">Comparative evaluation of unsupervised clustering methods for cell-type annotation in HuBMAP CODEX intestinal tissue.</a> <em>Duke Health Data Science Showcase.</em></span>
-              <span class="pill">2025</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Tascesme, E., &amp; Rabin, N. (2025). <a href="20250908_BMES_Deutsch.pdf" target="_blank" rel="noopener noreferrer">sEMG hand and wrist movement classification: Evaluating QUANT features.</a> <em>Biomedical Engineering Society Annual Meeting.</em></span>
-              <span class="pill">2025</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span>Miao, Y., <strong>Deutsch, Z.</strong>, &amp; Hickey, J. W. (2025). <a href="20250502_HuBMAP_annual_poster_Yang-compressed.pdf" target="_blank" rel="noopener noreferrer">Computational framework for multi-organ cell type annotation of HuBMAP single-cell spatial-omics data.</a> <em>HuBMAP Annual Meeting.</em></span>
-              <span class="pill">2025</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Baldwin, R., Coutu, J., Mehrotra, I., Sridhar, A., Tang, S., &amp; Tanzillo, D. (2025). <a href="Review%20Paper%20Structure.pdf" target="_blank" rel="noopener noreferrer">Development of a haptic feedback system with real-time force monitoring for enhanced catheter placement training in VR environments.</a> <em>Fortin Foundation Bass Connections Showcase.</em></span>
-              <span class="pill">2025</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. (2025). <a href="20250410_Undergraduate_Research_Symposium_Deutsch.pdf" target="_blank" rel="noopener noreferrer">Computational pipeline for cell type annotation of HuBMAP spatial-omics data.</a> <em>Duke Undergraduate Research Symposium.</em></span>
-              <span class="pill">2025</span>
-            </div>
-          </article>
-
-          <article class="card project">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span><strong>Deutsch, Z.</strong>, Grant, B., Hezrony, L., &amp; Mebane, G. (2024). <a href="Poster%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Liquid level detection system in bCPAP respiratory assistance devices.</a> <em>Duke Pratt Design Exposition.</em></span>
-              <span class="pill">2024</span>
-            </div>
-          </article>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong> &amp; Oca, S. R. (2026). <a href="Duke_AI_Education_Conference.pdf" target="_blank" rel="noopener noreferrer">Evaluating Engineering Students’ Detection of Hallucinations in Large Language Model Solutions.</a> <em>The AI in Education at Duke Summit.</em></div>
+          </div>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. W. (2025). <a href="20251125_Health_Data_Science.pdf" target="_blank" rel="noopener noreferrer">Comparative evaluation of unsupervised clustering methods for cell-type annotation in HuBMAP CODEX intestinal tissue.</a> <em>Duke Health Data Science Showcase.</em></div>
+          </div>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong>, Tascesme, E., &amp; Rabin, N. (2025). <a href="20250908_BMES_Deutsch.pdf" target="_blank" rel="noopener noreferrer">sEMG hand and wrist movement classification: Evaluating QUANT features.</a> <em>Biomedical Engineering Society Annual Meeting.</em></div>
+          </div>
+          <div class="list-item">
+            <div>Miao, Y., <strong>Deutsch, Z.</strong>, &amp; Hickey, J. W. (2025). <a href="20250502_HuBMAP_annual_poster_Yang-compressed.pdf" target="_blank" rel="noopener noreferrer">Computational framework for multi-organ cell type annotation of HuBMAP single-cell spatial-omics data.</a> <em>HuBMAP Annual Meeting.</em></div>
+          </div>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong>, Baldwin, R., Coutu, J., Mehrotra, I., Sridhar, A., Tang, S., &amp; Tanzillo, D. (2025). <a href="Review%20Paper%20Structure.pdf" target="_blank" rel="noopener noreferrer">Development of a haptic feedback system with real-time force monitoring for enhanced catheter placement training in VR environments.</a> <em>Fortin Foundation Bass Connections Showcase.</em></div>
+          </div>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong>, Miao, Y., &amp; Hickey, J. (2025). <a href="20250410_Undergraduate_Research_Symposium_Deutsch.pdf" target="_blank" rel="noopener noreferrer">Computational pipeline for cell type annotation of HuBMAP spatial-omics data.</a> <em>Duke Undergraduate Research Symposium.</em></div>
+          </div>
+          <div class="list-item">
+            <div><strong>Deutsch, Z.</strong>, Grant, B., Hezrony, L., &amp; Mebane, G. (2024). <a href="Poster%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Liquid level detection system in bCPAP respiratory assistance devices.</a> <em>Duke Pratt Design Exposition.</em></div>
+          </div>
         </div>
       </section>
     </main>
