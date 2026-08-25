@@ -43,6 +43,84 @@ function renderCallButton() {
   byId("add-contact").disabled = busy || count >= state.max_batch_size;
 }
 
+function latestBatchItem(contactId) {
+  for (const batch of state.batches) {
+    const item = batch.items.find((candidate) => candidate.contact_id === contactId);
+    if (item) return item;
+  }
+  return null;
+}
+
+function statusLabel(status) {
+  const labels = {
+    planned: "Ready to call",
+    submitting: "Starting call",
+    live_requested: "Calling",
+    in_progress: "Survey in progress",
+    callback_pending: "Waiting for a callback",
+    completed: "Survey complete",
+    declined: "Survey declined",
+    opted_out: "Opted out",
+    unreachable: "No answer",
+    disconnected: "Call ended before completion",
+    incomplete: "Survey incomplete",
+    identity_unverified: "Identity not confirmed",
+    request_unknown: "Call status unavailable",
+    blocked: "Call blocked",
+    cancelled: "Call cancelled",
+  };
+  return labels[status] || "Awaiting responses";
+}
+
+function responseLabel(response) {
+  if (response.status === "not_applicable") return "Not applicable";
+  if (response.status === "no_response") return "No response";
+  return String(response.response);
+}
+
+function renderResponses() {
+  const list = byId("response-list");
+  list.replaceChildren();
+  const results = activeContacts()
+    .map((contact) => ({ contact, item: latestBatchItem(contact.contact_id) }))
+    .filter(({ item }) => item);
+  byId("responses-empty").hidden = results.length !== 0;
+
+  for (const { contact, item } of results) {
+    const card = document.createElement("article");
+    const headingRow = document.createElement("div");
+    const name = document.createElement("h3");
+    const status = document.createElement("span");
+    const answers = document.createElement("dl");
+
+    name.textContent = contact.display_name;
+    status.textContent = statusLabel(item.status);
+    headingRow.className = "response-heading";
+    headingRow.append(name, status);
+    answers.className = "answer-grid";
+    const responses = Array.isArray(item.responses) ? item.responses : [];
+
+    if (!responses.length) {
+      const waiting = document.createElement("p");
+      waiting.className = "response-waiting";
+      waiting.textContent = "No answers received yet.";
+      card.append(headingRow, waiting);
+    } else {
+      for (const response of responses) {
+        const answer = document.createElement("div");
+        const question = document.createElement("dt");
+        const value = document.createElement("dd");
+        question.textContent = `Question ${response.question}`;
+        value.textContent = responseLabel(response);
+        answer.append(question, value);
+        answers.append(answer);
+      }
+      card.append(headingRow, answers);
+    }
+    list.append(card);
+  }
+}
+
 function normalizePhone(value) {
   const digits = String(value).replace(/\D/g, "");
   if (digits.length === 10) return `+1${digits}`;
@@ -78,15 +156,18 @@ function renderContacts() {
     list.append(item);
   }
   renderCallButton();
+  renderResponses();
 }
 
-async function refresh() {
+async function refresh({ quiet = false } = {}) {
   try {
     state = await api("state");
     renderContacts();
   } catch (_) {
-    setNotice("The call list is temporarily unavailable.", true);
-    byId("call-list").disabled = true;
+    if (!quiet) {
+      setNotice("The call list is temporarily unavailable.", true);
+      byId("call-list").disabled = true;
+    }
   }
 }
 
@@ -162,3 +243,6 @@ byId("call-list").addEventListener("click", async () => {
 });
 
 refresh();
+setInterval(() => {
+  if (!busy && document.visibilityState === "visible") refresh({ quiet: true });
+}, 4000);
