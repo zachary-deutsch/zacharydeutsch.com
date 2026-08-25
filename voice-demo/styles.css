@@ -18,6 +18,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; }
 
@@ -140,8 +141,9 @@ h1 {
   padding: 1rem 1.15rem;
 }
 
-.connection-card div { display: grid; }
-.connection-card span:last-child { color: var(--muted); font-size: 0.78rem; }
+.connection-copy { display: grid; }
+#connection-detail { color: var(--muted); font-size: 0.78rem; }
+.connection-actions { display: flex; gap: 0.45rem; margin-top: 0.65rem; }
 
 .connection-dot {
   background: #8b99a7;
@@ -241,6 +243,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(9, 105, 218,
 .button.danger { background: var(--danger); color: #fff; }
 .button.link-danger { background: transparent; color: var(--danger); min-height: auto; padding: 0.2rem; }
 .button.full { width: 100%; }
+.button.compact { min-height: 2rem; padding: 0.35rem 0.65rem; }
 .button:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .selected-summary {
@@ -299,6 +302,7 @@ dialog::backdrop { background: rgba(8, 29, 48, 0.52); backdrop-filter: blur(3px)
 .dialog-card h2 { margin: 0; }
 .dialog-card p:not(.panel-kicker) { color: var(--muted); }
 .dialog-card code { background: var(--canvas); border-radius: 0.45rem; display: block; overflow-wrap: anywhere; padding: 0.7rem; }
+.dialog-error { color: var(--danger) !important; font-size: 0.82rem; min-height: 1.25rem; }
 
 .sr-only { height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; clip: rect(0, 0, 0, 0); }
 

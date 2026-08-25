@@ -32,9 +32,13 @@
       </div>
       <div class="connection-card" aria-live="polite">
         <span id="connection-dot" class="connection-dot" aria-hidden="true"></span>
-        <div>
+        <div class="connection-copy">
           <strong id="connection-label">Simulation workspace</strong>
           <span id="connection-detail">No calls can be placed from this browser.</span>
+          <div class="connection-actions">
+            <button id="operator-access" class="button quiet compact" type="button">Enable operator controls</button>
+            <button id="operator-disconnect" class="button quiet compact" type="button" hidden>Disconnect</button>
+          </div>
         </div>
       </div>
     </section>
@@ -184,6 +188,21 @@
       <div class="form-actions">
         <button id="cancel-launch" class="button quiet" value="cancel">Cancel</button>
         <button id="confirm-launch" class="button danger" value="default">Launch test batch</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="access-dialog">
+    <form id="access-form" class="dialog-card">
+      <p class="panel-kicker">Team access</p>
+      <h2>Enable operator controls</h2>
+      <p>Enter the shared demo access code to view the approved roster and place allow-listed test calls.</p>
+      <label for="access-input">Demo access code</label>
+      <input id="access-input" type="password" minlength="32" maxlength="128" autocomplete="current-password" required>
+      <p id="access-error" class="dialog-error" role="alert"></p>
+      <div class="form-actions">
+        <button id="cancel-access" class="button quiet" type="button">Cancel</button>
+        <button id="confirm-access" class="button primary" type="submit">Connect</button>
       </div>
     </form>
   </dialog>
