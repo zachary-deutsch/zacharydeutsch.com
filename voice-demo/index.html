@@ -3,190 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A synthetic demonstration of a consent-first voice survey workflow.">
+  <meta name="description" content="Baptist Health voice survey call demo.">
   <meta name="robots" content="noindex, nofollow">
-  <title>Voice Survey Demo — Zachary Deutsch</title>
+  <title>Baptist Health Voice Survey Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to portal</a>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="Zachary Deutsch home">
-      <span class="brand-mark" aria-hidden="true">ZD</span>
-      <span>Zachary Deutsch</span>
-    </a>
-    <div class="header-actions">
-      <span class="environment-badge">Synthetic demonstration</span>
-    </div>
-  </header>
+  <main>
+    <header>
+      <p>Baptist Health</p>
+      <h1>Voice Survey Demo</h1>
+    </header>
 
-  <main id="main" class="page-shell">
-    <section class="intro" aria-labelledby="page-title">
-      <div>
-        <p class="eyebrow">Voice outreach workflow</p>
-        <h1 id="page-title">Baptist Health Voice Survey Demo</h1>
-        <p class="intro-copy">Create a small test roster, review a frozen call batch, and launch approved test calls from one page.</p>
-      </div>
-      <div class="connection-card" aria-live="polite">
-        <span id="connection-dot" class="connection-dot" aria-hidden="true"></span>
-        <div class="connection-copy">
-          <strong id="connection-label">Connecting to call controls</strong>
-          <span id="connection-detail">Loading the approved test roster.</span>
-        </div>
-      </div>
-    </section>
-
-    <aside class="safety-note">
-      <strong>Demo boundary</strong>
-      <span>This page is for synthetic, staff-owned test contacts only. It is not medical care, a patient portal, or an emergency service.</span>
-    </aside>
-
-    <div id="notice" class="notice" role="status" aria-live="polite"></div>
-
-    <section class="metrics" aria-label="Portal summary">
-      <article class="metric-card">
-        <span class="metric-label">Active contacts</span>
-        <strong id="contact-count">0</strong>
-        <span class="metric-note">Maximum 3 per batch</span>
-      </article>
-      <article class="metric-card">
-        <span class="metric-label">Ready batches</span>
-        <strong id="ready-count">0</strong>
-        <span class="metric-note">Frozen before launch</span>
-      </article>
-      <article class="metric-card">
-        <span class="metric-label">Completed items</span>
-        <strong id="completed-count">0</strong>
-        <span class="metric-note">Simulation or test calls</span>
-      </article>
-    </section>
-
-    <section class="workspace-grid">
-      <article class="panel contact-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Roster</p>
-            <h2>Add a test contact</h2>
-          </div>
-          <span class="step-number">01</span>
-        </div>
-        <form id="contact-form">
-          <input id="editing-id" type="hidden">
-          <label for="display-name">Display name</label>
-          <input id="display-name" name="display-name" maxlength="100" placeholder="e.g. Zachary" autocomplete="off" required>
-
-          <label for="phone-e164">Phone number</label>
-          <input id="phone-e164" name="phone-e164" type="tel" inputmode="tel" maxlength="20" placeholder="+13125550123" autocomplete="off" required>
-          <p class="field-help">Use international E.164 format, including the leading +1.</p>
-
-          <label class="check-row" for="synthetic-authorized">
-            <input id="synthetic-authorized" type="checkbox" required>
-            <span>I confirm this is a staff-owned or synthetic test contact.</span>
-          </label>
-
-          <div class="form-actions">
-            <button id="save-contact" class="button primary" type="submit">Add contact</button>
-            <button id="clear-contact" class="button quiet" type="button">Clear</button>
-          </div>
-        </form>
-      </article>
-
-      <article class="panel batch-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Batch setup</p>
-            <h2>Freeze selected contacts</h2>
-          </div>
-          <span class="step-number">02</span>
-        </div>
-        <p>Select up to three authorized contacts. The frozen batch preserves exactly who was reviewed before simulation or calling.</p>
-        <div class="selected-summary">
-          <strong id="selected-count">0 selected</strong>
-          <span id="selected-names">Choose contacts in the roster below.</span>
-        </div>
-        <button id="create-batch" class="button primary full" type="button" disabled>Create review batch</button>
-      </article>
-    </section>
-
-    <section class="panel table-panel" aria-labelledby="contacts-title">
-      <div class="panel-heading table-heading">
-        <div>
-          <p class="panel-kicker">Contact list</p>
-          <h2 id="contacts-title">Synthetic contacts</h2>
-        </div>
-        <span class="step-number">03</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Select</th>
-              <th scope="col">Name</th>
-              <th scope="col">Test number</th>
-              <th scope="col">Authorization</th>
-              <th scope="col">Status</th>
-              <th scope="col"><span class="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody id="contacts"></tbody>
-        </table>
-        <div id="contacts-empty" class="empty-state">
-          <strong>No test contacts yet</strong>
-          <span>Add a synthetic contact to begin building a review batch.</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel table-panel" aria-labelledby="batches-title">
-      <div class="panel-heading table-heading">
-        <div>
-          <p class="panel-kicker">Call control</p>
-          <h2 id="batches-title">Batch activity</h2>
-        </div>
-        <span class="step-number">04</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Created</th>
-              <th scope="col">State</th>
-              <th scope="col">Frozen contacts</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="batches"></tbody>
-        </table>
-        <div id="batches-empty" class="empty-state">
-          <strong>No batch activity</strong>
-          <span>Select contacts above and freeze the first review batch.</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <span>Built by Zachary Deutsch</span>
-    <span>Consent-first · No call recording · Synthetic data only</span>
-  </footer>
-
-  <dialog id="confirm-dialog">
-    <form method="dialog" class="dialog-card">
-      <p class="panel-kicker">Live test confirmation</p>
-      <h2>Place this approved test batch?</h2>
-      <p>Twilio may call every allow-listed number in this batch. Calls are never retried automatically.</p>
-      <label for="confirmation-input">Type the confirmation phrase shown below</label>
-      <code id="confirmation-phrase"></code>
-      <input id="confirmation-input" autocomplete="off">
-      <div class="form-actions">
-        <button id="cancel-launch" class="button quiet" value="cancel">Cancel</button>
-        <button id="confirm-launch" class="button danger" value="default">Launch test batch</button>
-      </div>
+    <form id="contact-form" class="contact-form">
+      <label>
+        <span>Name</span>
+        <input id="name" maxlength="100" autocomplete="off" placeholder="Zachary" required>
+      </label>
+      <label>
+        <span>Phone number</span>
+        <input id="phone" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="+1 312 555 0123" required>
+      </label>
+      <button id="add-contact" class="add-button" type="submit">Add</button>
     </form>
-  </dialog>
+
+    <section aria-label="People to call">
+      <ul id="contact-list" class="contact-list"></ul>
+      <p id="empty-list" class="empty-list">Add a name and phone number.</p>
+    </section>
+
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <button id="call-list" class="call-button" type="button" disabled>Call listed contacts</button>
+  </main>
 
   <script src="app.js"></script>
 </body>
