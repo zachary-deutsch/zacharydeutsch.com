@@ -152,8 +152,70 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .call-button:hover:not(:disabled) { background: var(--blue-dark); }
 
+.responses {
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+}
+
+.responses h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.responses-empty,
+.response-waiting {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0.65rem 0 0;
+}
+
+.response-list { display: grid; gap: 1rem; margin-top: 1rem; }
+
+.response-list article {
+  background: #f7fafc;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  padding: 1rem;
+}
+
+.response-heading {
+  align-items: baseline;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.response-heading h3 { font-size: 1rem; margin: 0; }
+.response-heading span { color: var(--muted); font-size: 0.78rem; text-align: right; }
+
+.answer-grid {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1rem 0 0;
+}
+
+.answer-grid div {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.answer-grid dt { color: var(--muted); font-size: 0.76rem; }
+.answer-grid dd { font-size: 0.88rem; font-weight: 700; margin: 0; text-align: right; }
+
 @media (max-width: 620px) {
   body { padding: 1rem; }
   main { border-radius: 1rem; }
   .contact-form { grid-template-columns: 1fr; }
+  .answer-grid { grid-template-columns: 1fr; }
 }
