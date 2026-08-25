@@ -1,21 +1,55 @@
 "use strict";
 
 const API_URL = "https://baptist-health-voice-poc-8063.twil.io/contact-portal";
+const ACCESS_STORAGE_KEY = "voice-demo-operator-access";
 
 let state = { contacts: [], batches: [], max_batch_size: 3, live_test_configured: false };
 let busy = false;
+let accessSecret = accessFromPrivateLink();
 
 const byId = (id) => document.getElementById(id);
 
+function accessFromPrivateLink() {
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  const candidate = String(fragment.get("access") || "").trim().toLowerCase();
+  if (/^[a-f0-9]{64}$/.test(candidate)) {
+    window.sessionStorage.setItem(ACCESS_STORAGE_KEY, candidate);
+  }
+  if (window.location.hash) {
+    history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
+  const stored = String(window.sessionStorage.getItem(ACCESS_STORAGE_KEY) || "").trim().toLowerCase();
+  return /^[a-f0-9]{64}$/.test(stored) ? stored : "";
+}
+
+function lockPortal() {
+  accessSecret = "";
+  window.sessionStorage.removeItem(ACCESS_STORAGE_KEY);
+  byId("access-required").hidden = false;
+  byId("operator-controls").hidden = true;
+}
+
+function unlockPortal() {
+  byId("access-required").hidden = true;
+  byId("operator-controls").hidden = false;
+}
+
 async function api(action, payload = {}) {
+  if (!accessSecret) throw new Error("portal_access_required");
   const response = await fetch(API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Portal-Access": accessSecret,
+    },
     body: JSON.stringify({ action, ...payload }),
   });
   let body = {};
   try { body = await response.json(); } catch (_) { /* Use the generic message below. */ }
-  if (!response.ok) throw new Error(body.error || "The request could not be completed.");
+  if (!response.ok) {
+    if (response.status === 403) lockPortal();
+    throw new Error(body.error || "The request could not be completed.");
+  }
   return body;
 }
 
@@ -175,11 +209,14 @@ function renderContacts() {
 async function refresh({ quiet = false } = {}) {
   try {
     state = await api("state");
+    unlockPortal();
     renderContacts();
   } catch (_) {
     if (!quiet) {
-      setNotice("The call list is temporarily unavailable.", true);
-      byId("call-list").disabled = true;
+      if (accessSecret) {
+        setNotice("The call list is temporarily unavailable.", true);
+        byId("call-list").disabled = true;
+      }
     }
   }
 }
@@ -263,7 +300,6 @@ byId("call-list").addEventListener("click", async () => {
       try { state = await api("cancel_batch", { batch_id: batchId }); } catch (_) { /* Do not retry a call request. */ }
     }
     const messages = {
-      destination_not_allowed: "One or more numbers are not approved for this demo.",
       destination_suppressed: "One or more numbers have opted out of calls.",
       live_calling_disabled: "Calling is currently unavailable.",
     };
@@ -273,7 +309,8 @@ byId("call-list").addEventListener("click", async () => {
   }
 });
 
-refresh();
+if (accessSecret) refresh();
+else lockPortal();
 setInterval(() => {
-  if (!busy && document.visibilityState === "visible") refresh({ quiet: true });
+  if (accessSecret && !busy && document.visibilityState === "visible") refresh({ quiet: true });
 }, 4000);

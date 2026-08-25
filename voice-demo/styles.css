@@ -50,6 +50,24 @@ h1 {
   margin: 0;
 }
 
+.access-required {
+  background: #f7fafc;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  padding: 1.25rem;
+}
+
+.access-required h2 {
+  font-family: Manrope, sans-serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.access-required p {
+  color: var(--muted);
+  margin: 0.55rem 0 0;
+}
+
 .contact-form {
   align-items: end;
   display: grid;
