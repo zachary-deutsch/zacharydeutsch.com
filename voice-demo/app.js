@@ -264,7 +264,6 @@ byId("call-list").addEventListener("click", async () => {
     }
     const messages = {
       destination_not_allowed: "One or more numbers are not approved for this demo.",
-      daily_limit_reached: "The demo call limit has been reached for today.",
       destination_suppressed: "One or more numbers have opted out of calls.",
       live_calling_disabled: "Calling is currently unavailable.",
     };
