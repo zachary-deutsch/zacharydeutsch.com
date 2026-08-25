@@ -58,7 +58,7 @@ button { cursor: pointer; }
   padding: 0 5vw;
 }
 
-.brand, .back-link {
+.brand {
   color: var(--ink);
   text-decoration: none;
 }
@@ -96,9 +96,6 @@ button { cursor: pointer; }
   padding: 0.35rem 0.7rem;
   text-transform: uppercase;
 }
-
-.back-link { color: var(--muted); font-size: 0.9rem; font-weight: 600; }
-.back-link:hover { color: var(--blue); }
 
 .page-shell { margin: 0 auto; max-width: 1240px; padding: 4.5rem 2rem 5rem; }
 
