@@ -129,11 +129,17 @@ function normalizePhone(value) {
   return String(value).trim();
 }
 
+function maskPhone(phone) {
+  const digits = String(phone).replace(/\D/g, "");
+  return `••• ••• ${digits.slice(-4)}`;
+}
+
 function renderContacts() {
   const list = byId("contact-list");
   const contacts = activeContacts();
   list.replaceChildren();
   byId("empty-list").hidden = contacts.length !== 0;
+  list.setAttribute("aria-busy", contacts.some((contact) => contact.pending) ? "true" : "false");
 
   for (const contact of contacts) {
     const item = document.createElement("li");
@@ -148,9 +154,16 @@ function renderContacts() {
 
     remove.type = "button";
     remove.className = "remove-button";
-    remove.textContent = "Remove";
-    remove.setAttribute("aria-label", `Remove ${contact.display_name}`);
-    remove.addEventListener("click", () => removeContact(contact.contact_id));
+    if (contact.pending) {
+      item.className = "pending-contact";
+      remove.textContent = "Adding…";
+      remove.disabled = true;
+      remove.setAttribute("aria-label", `Adding ${contact.display_name}`);
+    } else {
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", `Remove ${contact.display_name}`);
+      remove.addEventListener("click", () => removeContact(contact.contact_id));
+    }
 
     item.append(details, remove);
     list.append(item);
@@ -177,17 +190,36 @@ byId("contact-form").addEventListener("submit", async (event) => {
   const phone = normalizePhone(byId("phone").value);
   if (!name || !phone) return;
 
+  const previousState = state;
+  const originalPhone = byId("phone").value;
+  const pendingId = `pending-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   setBusy(true);
   setNotice("");
+  state = {
+    ...state,
+    contacts: [{
+      contact_id: pendingId,
+      display_name: name,
+      phone_masked: maskPhone(phone),
+      synthetic_authorized: true,
+      active: true,
+      pending: true,
+    }, ...state.contacts],
+  };
+  event.currentTarget.reset();
+  renderContacts();
   try {
     state = await api("create_contact", {
       display_name: name,
       phone_e164: phone,
       synthetic_authorized: true,
     });
-    event.currentTarget.reset();
     renderContacts();
   } catch (error) {
+    state = previousState;
+    byId("name").value = name;
+    byId("phone").value = originalPhone;
+    renderContacts();
     setNotice(error.message === "duplicate_contact" ? "That phone number is already listed." : "Check the name and phone number, then try again.", true);
   } finally {
     setBusy(false);
