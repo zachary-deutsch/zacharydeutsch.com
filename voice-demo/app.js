@@ -1,363 +1,164 @@
 "use strict";
 
 const API_URL = "https://baptist-health-voice-poc-8063.twil.io/contact-portal";
-const STORAGE_KEY = "voice-demo-simulation-v1";
 
-let state = emptyState();
-let pendingLaunch = null;
+let state = { contacts: [], batches: [], max_batch_size: 3, live_test_configured: false };
+let busy = false;
 
 const byId = (id) => document.getElementById(id);
-const notice = byId("notice");
-
-function emptyState() {
-  return {
-    mode: "simulation",
-    live_test_configured: false,
-    max_batch_size: 3,
-    contacts: [],
-    batches: [],
-  };
-}
-
-function uid(prefix) {
-  const bytes = new Uint8Array(12);
-  crypto.getRandomValues(bytes);
-  return `${prefix}_${[...bytes].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function showMessage(text, isError = false) {
-  notice.textContent = text;
-  notice.className = isError ? "notice error" : "notice";
-}
 
 async function api(action, payload = {}) {
   const response = await fetch(API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action, ...payload }),
   });
   let body = {};
-  try { body = await response.json(); } catch (_) { /* Return the generic error below. */ }
-  if (!response.ok) throw new Error(body.error || "The portal request was rejected.");
+  try { body = await response.json(); } catch (_) { /* Use the generic message below. */ }
+  if (!response.ok) throw new Error(body.error || "The request could not be completed.");
   return body;
 }
 
-function loadSimulation() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if (parsed && Array.isArray(parsed.contacts) && Array.isArray(parsed.batches)) {
-      return { ...emptyState(), ...parsed, mode: "simulation", live_test_configured: false };
-    }
-  } catch (_) { /* Start with an empty simulation workspace. */ }
-  return emptyState();
+function activeContacts() {
+  return state.contacts.filter((contact) => contact.active === true);
 }
 
-function saveSimulation() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ contacts: state.contacts, batches: state.batches }));
+function setNotice(message, isError = false) {
+  const notice = byId("notice");
+  notice.textContent = message;
+  notice.className = isError ? "notice error" : "notice";
 }
 
-function maskNumber(number) {
-  const digits = String(number).replace(/\D/g, "");
-  return digits.length >= 4 ? `••• ••• ${digits.slice(-4)}` : "Masked";
+function setBusy(value) {
+  busy = value;
+  renderCallButton();
 }
 
-function formatCreated(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Just now" : date.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+function renderCallButton() {
+  const contacts = activeContacts();
+  const button = byId("call-list");
+  const count = contacts.length;
+  button.textContent = count === 0 ? "Call listed contacts" : count === 1 ? `Call ${contacts[0].display_name}` : `Call ${count} people`;
+  button.disabled = busy || count === 0 || count > state.max_batch_size || !state.live_test_configured;
+  byId("add-contact").disabled = busy || count >= state.max_batch_size;
 }
 
-function statusPill(value) {
-  const node = document.createElement("span");
-  node.className = `status-pill ${String(value).toLowerCase().replace(/[^a-z]+/g, "-")}`;
-  node.textContent = String(value).replaceAll("_", " ");
-  return node;
-}
-
-function actionButton(label, className, handler) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = `button ${className}`;
-  button.textContent = label;
-  button.addEventListener("click", handler);
-  return button;
-}
-
-function updateSelection() {
-  const selected = [...document.querySelectorAll(".contact-select:checked")];
-  const names = selected.map((input) => input.dataset.name);
-  byId("selected-count").textContent = `${selected.length} selected`;
-  byId("selected-names").textContent = names.length ? names.join(", ") : "Choose contacts in the roster below.";
-  byId("create-batch").disabled = selected.length === 0 || selected.length > state.max_batch_size;
+function normalizePhone(value) {
+  const digits = String(value).replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  if (String(value).trim().startsWith("+") && digits.length >= 7 && digits.length <= 15) return `+${digits}`;
+  return String(value).trim();
 }
 
 function renderContacts() {
-  const tbody = byId("contacts");
-  tbody.replaceChildren();
-  const activeContacts = state.contacts.filter((contact) => contact.active !== false);
-  byId("contacts-empty").classList.toggle("visible", state.contacts.length === 0);
+  const list = byId("contact-list");
+  const contacts = activeContacts();
+  list.replaceChildren();
+  byId("empty-list").hidden = contacts.length !== 0;
 
-  for (const contact of state.contacts) {
-    const row = document.createElement("tr");
-    const selectCell = document.createElement("td");
-    const selector = document.createElement("input");
-    selector.type = "checkbox";
-    selector.className = "contact-select";
-    selector.value = contact.contact_id;
-    selector.dataset.name = contact.display_name;
-    selector.disabled = contact.active === false || contact.synthetic_authorized !== true;
-    selector.setAttribute("aria-label", `Select ${contact.display_name}`);
-    selector.addEventListener("change", updateSelection);
-    selectCell.append(selector);
-    row.append(selectCell);
+  for (const contact of contacts) {
+    const item = document.createElement("li");
+    const details = document.createElement("div");
+    const name = document.createElement("strong");
+    const phone = document.createElement("span");
+    const remove = document.createElement("button");
 
-    for (const value of [
-      contact.display_name,
-      contact.phone_masked || maskNumber(contact.phone_e164),
-      contact.synthetic_authorized ? "Test authorized" : "Not authorized",
-    ]) {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.append(cell);
-    }
-    const statusCell = document.createElement("td");
-    statusCell.append(statusPill(contact.active === false ? "archived" : "active"));
-    row.append(statusCell);
+    name.textContent = contact.display_name;
+    phone.textContent = contact.phone_masked;
+    details.append(name, phone);
 
-    const actionCell = document.createElement("td");
-    const actions = document.createElement("div");
-    actions.className = "row-actions";
-    actions.append(actionButton("Edit", "quiet", () => editContact(contact)));
-    if (contact.active !== false) actions.append(actionButton("Archive", "link-danger", () => archiveContact(contact.contact_id)));
-    actionCell.append(actions);
-    row.append(actionCell);
-    tbody.append(row);
+    remove.type = "button";
+    remove.className = "remove-button";
+    remove.textContent = "Remove";
+    remove.setAttribute("aria-label", `Remove ${contact.display_name}`);
+    remove.addEventListener("click", () => removeContact(contact.contact_id));
+
+    item.append(details, remove);
+    list.append(item);
   }
-  byId("contact-count").textContent = String(activeContacts.length);
-  updateSelection();
-}
-
-function renderBatches() {
-  const tbody = byId("batches");
-  tbody.replaceChildren();
-  byId("batches-empty").classList.toggle("visible", state.batches.length === 0);
-  let ready = 0;
-  let completed = 0;
-
-  for (const batch of state.batches) {
-    if (batch.status === "ready") ready += 1;
-    completed += batch.items.filter((item) => ["simulated", "completed"].includes(item.status)).length;
-    const row = document.createElement("tr");
-    const created = document.createElement("td");
-    created.textContent = formatCreated(batch.created_at_utc);
-    row.append(created);
-    const status = document.createElement("td");
-    status.append(statusPill(batch.status));
-    row.append(status);
-    const itemCell = document.createElement("td");
-    const items = document.createElement("div");
-    items.className = "batch-items";
-    for (const item of batch.items) {
-      const line = document.createElement("span");
-      line.textContent = `${item.display_name_snapshot} · ${item.phone_masked || maskNumber(item.phone_e164_snapshot)} · ${item.status}`;
-      items.append(line);
-    }
-    itemCell.append(items);
-    row.append(itemCell);
-    const actionCell = document.createElement("td");
-    const actions = document.createElement("div");
-    actions.className = "row-actions";
-    if (batch.status === "ready") actions.append(actionButton("Simulate", "quiet", () => simulateBatch(batch.batch_id)));
-    if (state.live_test_configured && ["ready", "running"].includes(batch.status)) {
-      actions.append(actionButton("Launch calls", "primary", () => openLaunchDialog(batch)));
-    }
-    if (["ready", "running", "blocked"].includes(batch.status)) actions.append(actionButton("Cancel", "link-danger", () => cancelBatch(batch.batch_id)));
-    actionCell.append(actions);
-    row.append(actionCell);
-    tbody.append(row);
-  }
-  byId("ready-count").textContent = String(ready);
-  byId("completed-count").textContent = String(completed);
-}
-
-function render() {
-  const connected = state.mode === "connected";
-  byId("connection-dot").classList.toggle("connected", connected);
-  byId("connection-label").textContent = connected ? "Operator controls connected" : "Simulation workspace";
-  byId("connection-detail").textContent = connected
-    ? (state.live_test_configured ? "Approved test calling is enabled." : "Calling remains disabled by the server.")
-    : "No calls can be placed from this browser.";
-  renderContacts();
-  renderBatches();
-}
-
-function editContact(contact) {
-  byId("editing-id").value = contact.contact_id;
-  byId("display-name").value = contact.display_name;
-  byId("phone-e164").value = contact.phone_e164 || "";
-  byId("phone-e164").placeholder = contact.phone_masked ? "Enter the complete number to change it" : "+13125550123";
-  byId("phone-e164").required = !contact.phone_masked;
-  byId("synthetic-authorized").checked = contact.synthetic_authorized === true;
-  byId("save-contact").textContent = "Save contact";
-  byId("display-name").focus();
-}
-
-function clearContactForm() {
-  byId("contact-form").reset();
-  byId("editing-id").value = "";
-  byId("phone-e164").placeholder = "+13125550123";
-  byId("phone-e164").required = true;
-  byId("save-contact").textContent = "Add contact";
+  renderCallButton();
 }
 
 async function refresh() {
   try {
-    const result = await api("state");
-    state = { ...result, mode: "connected" };
-    render();
+    state = await api("state");
+    renderContacts();
   } catch (_) {
-    state = loadSimulation();
-    render();
-    showMessage("Operator connection is unavailable. The page is safely running in simulation mode.", true);
+    setNotice("The call list is temporarily unavailable.", true);
+    byId("call-list").disabled = true;
   }
 }
 
 byId("contact-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const contactId = byId("editing-id").value;
-  const payload = {
-    contact_id: contactId || undefined,
-    display_name: byId("display-name").value.trim(),
-    phone_e164: byId("phone-e164").value.trim(),
-    synthetic_authorized: byId("synthetic-authorized").checked,
-  };
+  const name = byId("name").value.trim();
+  const phone = normalizePhone(byId("phone").value);
+  if (!name || !phone) return;
+
+  setBusy(true);
+  setNotice("");
   try {
-    if (state.mode === "connected") {
-      const result = await api(contactId ? "update_contact" : "create_contact", payload);
-      state = { ...result, mode: "connected" };
-    } else if (contactId) {
-      const contact = state.contacts.find((item) => item.contact_id === contactId);
-      Object.assign(contact, payload);
-      for (const batch of state.batches.filter((item) => item.status === "ready")) batch.status = "blocked";
-      saveSimulation();
-    } else {
-      state.contacts.unshift({ ...payload, contact_id: uid("ctc"), active: true, created_at_utc: new Date().toISOString() });
-      saveSimulation();
-    }
-    clearContactForm();
-    render();
-    showMessage(contactId ? "Contact updated. Pending batches were blocked for review." : "Synthetic contact added.");
+    state = await api("create_contact", {
+      display_name: name,
+      phone_e164: phone,
+      synthetic_authorized: true,
+    });
+    event.currentTarget.reset();
+    renderContacts();
   } catch (error) {
-    showMessage(error.message, true);
+    setNotice(error.message === "duplicate_contact" ? "That phone number is already listed." : "Check the name and phone number, then try again.", true);
+  } finally {
+    setBusy(false);
   }
 });
 
-byId("clear-contact").addEventListener("click", clearContactForm);
-
-async function archiveContact(contactId) {
-  if (!window.confirm("Archive this synthetic contact?")) return;
+async function removeContact(contactId) {
+  setBusy(true);
+  setNotice("");
   try {
-    if (state.mode === "connected") {
-      const result = await api("archive_contact", { contact_id: contactId });
-      state = { ...result, mode: "connected" };
-    } else {
-      const contact = state.contacts.find((item) => item.contact_id === contactId);
-      if (contact) contact.active = false;
-      saveSimulation();
-    }
-    render();
-    showMessage("Contact archived.");
-  } catch (error) { showMessage(error.message, true); }
-}
-
-byId("create-batch").addEventListener("click", async () => {
-  const contactIds = [...document.querySelectorAll(".contact-select:checked")].map((input) => input.value);
-  if (!contactIds.length || contactIds.length > state.max_batch_size) {
-    showMessage(`Select between 1 and ${state.max_batch_size} contacts.`, true);
-    return;
+    state = await api("archive_contact", { contact_id: contactId });
+    renderContacts();
+  } catch (_) {
+    setNotice("That person could not be removed.", true);
+  } finally {
+    setBusy(false);
   }
-  try {
-    if (state.mode === "connected") {
-      const result = await api("create_batch", { contact_ids: contactIds });
-      state = { ...result, mode: "connected" };
-    } else {
-      const items = contactIds.map((contactId) => {
-        const contact = state.contacts.find((candidate) => candidate.contact_id === contactId);
-        return {
-          batch_item_id: uid("bti"),
-          contact_id: contactId,
-          display_name_snapshot: contact.display_name,
-          phone_e164_snapshot: contact.phone_e164,
-          status: "planned",
-        };
-      });
-      state.batches.unshift({ batch_id: uid("bat"), created_at_utc: new Date().toISOString(), status: "ready", items });
-      saveSimulation();
-    }
-    render();
-    showMessage("Review batch frozen. You can now simulate the workflow.");
-  } catch (error) { showMessage(error.message, true); }
-});
-
-async function simulateBatch(batchId) {
-  try {
-    if (state.mode === "connected") {
-      const result = await api("simulate_batch", { batch_id: batchId });
-      state = { ...result, mode: "connected" };
-    } else {
-      const batch = state.batches.find((item) => item.batch_id === batchId);
-      if (batch) {
-        batch.status = "simulated";
-        batch.items.forEach((item) => { item.status = "simulated"; });
-      }
-      saveSimulation();
-    }
-    render();
-    showMessage("Simulation complete. No calls were placed.");
-  } catch (error) { showMessage(error.message, true); }
 }
 
-async function cancelBatch(batchId) {
+byId("call-list").addEventListener("click", async () => {
+  const contacts = activeContacts();
+  if (contacts.length === 0 || contacts.length > state.max_batch_size) return;
+
+  setBusy(true);
+  setNotice("Starting calls…");
+  let batchId = null;
   try {
-    if (state.mode === "connected") {
-      const result = await api("cancel_batch", { batch_id: batchId });
-      state = { ...result, mode: "connected" };
-    } else {
-      const batch = state.batches.find((item) => item.batch_id === batchId);
-      if (batch) {
-        batch.status = "cancelled";
-        batch.items.filter((item) => item.status === "planned").forEach((item) => { item.status = "cancelled"; });
-      }
-      saveSimulation();
+    const existingBatchIds = new Set(state.batches.map((batch) => batch.batch_id));
+    state = await api("create_batch", { contact_ids: contacts.map((contact) => contact.contact_id) });
+    const batch = state.batches.find((candidate) => !existingBatchIds.has(candidate.batch_id) && candidate.status === "ready");
+    if (!batch) throw new Error("batch_not_created");
+    batchId = batch.batch_id;
+    state = await api("launch_batch", {
+      batch_id: batch.batch_id,
+      confirmation: batch.batch_confirmation,
+    });
+    renderContacts();
+    setNotice(contacts.length === 1 ? `Calling ${contacts[0].display_name}.` : `Calling ${contacts.length} people.`);
+  } catch (error) {
+    if (batchId) {
+      try { state = await api("cancel_batch", { batch_id: batchId }); } catch (_) { /* Do not retry a call request. */ }
     }
-    render();
-    showMessage("Remaining batch items cancelled.");
-  } catch (error) { showMessage(error.message, true); }
-}
-
-function openLaunchDialog(batch) {
-  pendingLaunch = batch;
-  byId("confirmation-phrase").textContent = batch.batch_confirmation;
-  byId("confirmation-input").value = "";
-  byId("confirm-dialog").showModal();
-}
-
-byId("confirm-dialog").addEventListener("close", async () => {
-  if (byId("confirm-dialog").returnValue !== "default" || !pendingLaunch) {
-    pendingLaunch = null;
-    return;
+    const messages = {
+      destination_not_allowed: "One or more numbers are not approved for this demo.",
+      daily_limit_reached: "The demo call limit has been reached for today.",
+      destination_suppressed: "One or more numbers have opted out of calls.",
+      live_calling_disabled: "Calling is currently unavailable.",
+    };
+    setNotice(messages[error.message] || "The calls could not be started.", true);
+  } finally {
+    setBusy(false);
   }
-  const confirmation = byId("confirmation-input").value;
-  const batchId = pendingLaunch.batch_id;
-  pendingLaunch = null;
-  try {
-    const result = await api("launch_batch", { batch_id: batchId, confirmation });
-    state = { ...result, mode: "connected" };
-    render();
-    showMessage("The guarded test batch was submitted. Calls will not be retried automatically.");
-  } catch (error) { showMessage(error.message, true); }
 });
 
 refresh();
-window.setInterval(() => refresh(), 7000);
