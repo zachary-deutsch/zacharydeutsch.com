@@ -2,25 +2,12 @@
 
 const API_URL = "https://baptist-health-voice-poc-8063.twil.io/contact-portal";
 const STORAGE_KEY = "voice-demo-simulation-v1";
-const ACCESS_STORAGE_KEY = "voice-demo-access";
-let accessKey = readAccessKey();
 
 let state = emptyState();
 let pendingLaunch = null;
 
 const byId = (id) => document.getElementById(id);
 const notice = byId("notice");
-
-function readAccessKey() {
-  const fragment = new URLSearchParams(window.location.hash.slice(1));
-  const key = fragment.get("access");
-  if (key) {
-    window.sessionStorage.setItem(ACCESS_STORAGE_KEY, key);
-    history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-    return key;
-  }
-  return window.sessionStorage.getItem(ACCESS_STORAGE_KEY) || "";
-}
 
 function emptyState() {
   return {
@@ -48,7 +35,6 @@ async function api(action, payload = {}) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Portal-Access": accessKey,
     },
     body: JSON.stringify({ action, ...payload }),
   });
@@ -202,8 +188,6 @@ function render() {
   byId("connection-detail").textContent = connected
     ? (state.live_test_configured ? "Approved test calling is enabled." : "Calling remains disabled by the server.")
     : "No calls can be placed from this browser.";
-  byId("operator-access").hidden = connected;
-  byId("operator-disconnect").hidden = !connected;
   renderContacts();
   renderBatches();
 }
@@ -228,66 +212,16 @@ function clearContactForm() {
 }
 
 async function refresh() {
-  if (!accessKey) {
-    state = loadSimulation();
-    render();
-    return false;
-  }
   try {
     const result = await api("state");
     state = { ...result, mode: "connected" };
     render();
-    return true;
   } catch (_) {
     state = loadSimulation();
     render();
     showMessage("Operator connection is unavailable. The page is safely running in simulation mode.", true);
-    return false;
   }
 }
-
-byId("operator-access").addEventListener("click", () => {
-  byId("access-input").value = "";
-  byId("access-error").textContent = "";
-  byId("access-dialog").showModal();
-  byId("access-input").focus();
-});
-
-byId("cancel-access").addEventListener("click", () => byId("access-dialog").close());
-
-byId("access-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const candidate = byId("access-input").value.trim();
-  if (!/^[A-Za-z0-9_-]{32,128}$/.test(candidate)) {
-    byId("access-error").textContent = "Enter the complete demo access code.";
-    return;
-  }
-  const connectButton = byId("confirm-access");
-  connectButton.disabled = true;
-  byId("access-error").textContent = "";
-  accessKey = candidate;
-  try {
-    const connected = await refresh();
-    if (!connected) throw new Error("access_rejected");
-    window.sessionStorage.setItem(ACCESS_STORAGE_KEY, accessKey);
-    byId("access-dialog").close();
-    showMessage("Operator controls enabled for this browser session.");
-  } catch (_) {
-    accessKey = "";
-    window.sessionStorage.removeItem(ACCESS_STORAGE_KEY);
-    byId("access-error").textContent = "That access code was not accepted.";
-  } finally {
-    connectButton.disabled = false;
-  }
-});
-
-byId("operator-disconnect").addEventListener("click", () => {
-  accessKey = "";
-  window.sessionStorage.removeItem(ACCESS_STORAGE_KEY);
-  state = loadSimulation();
-  render();
-  showMessage("Operator controls disconnected. This browser is back in simulation mode.");
-});
 
 byId("contact-form").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -426,6 +360,4 @@ byId("confirm-dialog").addEventListener("close", async () => {
 });
 
 refresh();
-window.setInterval(() => {
-  if (accessKey) refresh();
-}, 7000);
+window.setInterval(() => refresh(), 7000);
