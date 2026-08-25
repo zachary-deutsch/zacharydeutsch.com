@@ -80,7 +80,7 @@ function renderCallButton() {
 function latestBatchItem(contactId) {
   for (const batch of state.batches) {
     const item = batch.items.find((candidate) => candidate.contact_id === contactId);
-    if (item) return item;
+    if (item) return { ...item, batch_id: batch.batch_id };
   }
   return null;
 }
@@ -117,7 +117,7 @@ function renderResponses() {
   list.replaceChildren();
   const results = activeContacts()
     .map((contact) => ({ contact, item: latestBatchItem(contact.contact_id) }))
-    .filter(({ item }) => item);
+    .filter(({ item }) => item && item.status !== "responses_removed");
   byId("responses-empty").hidden = results.length !== 0;
 
   for (const { contact, item } of results) {
@@ -125,12 +125,24 @@ function renderResponses() {
     const headingRow = document.createElement("div");
     const name = document.createElement("h3");
     const status = document.createElement("span");
+    const actions = document.createElement("div");
     const answers = document.createElement("dl");
 
     name.textContent = contact.display_name;
     status.textContent = statusLabel(item.status);
     headingRow.className = "response-heading";
-    headingRow.append(name, status);
+    actions.className = "response-actions";
+    actions.append(status);
+    if (item.responses_removable === true) {
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "remove-response-button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", `Remove responses for ${contact.display_name}`);
+      remove.addEventListener("click", () => removeResponseCard(item, contact.display_name));
+      actions.append(remove);
+    }
+    headingRow.append(name, actions);
     answers.className = "answer-grid";
     const responses = Array.isArray(item.responses) ? item.responses : [];
 
@@ -152,6 +164,27 @@ function renderResponses() {
       card.append(headingRow, answers);
     }
     list.append(card);
+  }
+}
+
+async function removeResponseCard(item, displayName) {
+  if (!window.confirm(`Remove the stored survey responses for ${displayName}?`)) return;
+  setBusy(true);
+  setNotice("");
+  try {
+    state = await api("remove_responses", {
+      batch_id: item.batch_id,
+      batch_item_id: item.batch_item_id,
+    });
+    renderContacts();
+    setNotice(`Responses for ${displayName} removed.`);
+  } catch (error) {
+    const message = error.message === "responses_not_removable"
+      ? "Responses can be removed only after the call has ended."
+      : "Those responses could not be removed.";
+    setNotice(message, true);
+  } finally {
+    setBusy(false);
   }
 }
 

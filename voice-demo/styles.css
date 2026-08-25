@@ -210,6 +210,21 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
 .response-heading h3 { font-size: 1rem; margin: 0; }
 .response-heading span { color: var(--muted); font-size: 0.78rem; text-align: right; }
 
+.response-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.remove-response-button {
+  background: transparent;
+  color: var(--danger);
+  font-size: 0.78rem;
+  padding: 0.25rem;
+}
+
+.remove-response-button:hover { text-decoration: underline; }
+
 .answer-grid {
   display: grid;
   gap: 0.55rem;
