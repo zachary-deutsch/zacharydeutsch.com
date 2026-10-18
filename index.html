@@ -3,14 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#191a1c" media="(prefers-color-scheme: dark)" />
   <title>Zachary Deutsch — Portfolio</title>
   <meta name="description" content="Personal website and portfolio of Zachary Deutsch." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root{
+      color-scheme:light dark;
       --bg:#ffffff; --text:#172025; --muted:#56616a;
       --border:#dce1e4; --link:#254e69; --ring:#6d93ae;
+    }
+    @media (prefers-color-scheme:dark){
+      :root{
+        --bg:#191a1c; --text:#eeeff0; --muted:#adb5bb;
+        --border:#3c4146; --link:#9dc8e3; --ring:#9dc8e3;
+      }
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
